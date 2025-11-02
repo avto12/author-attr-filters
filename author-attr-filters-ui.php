@@ -7,6 +7,84 @@
  * Text Domain: authorAttrFilters
  */
 
+/*
+===========================================================
+[agaf_filters] — ავტორის ატრიბუტების ფილტრები (UI-しかし)
+===========================================================
+აღწერა:
+- რენდერავს ვიზუალურ ფილტრებს ავტორის გვერდზე.
+- აგროვებს არჩევანს window.AGAF_FILTERS-ში და გადასცემს თქვენს
+  agAuthorFetchProducts() ფუნქციას (პროდუქტების AJAX განახლებისთვის).
+- ქაუნთები მუშაობს თქვენი არსებული fetchCounts()/applyCounts() ლოგიკით.
+- Select UI არის custom dropdown (search + multi + “Select All”).
+
+სინტაქსი:
+[agaf_filters taxes="tax:type:multiple, tax2:type2:multiple2, ... "
+              title="სათაური"
+              class="დამატებითი-css-კლასი"
+              placeholder="აირჩიე"
+              show_cont="yes|no"]
+
+პარამეტრები:
+- taxes           (სავალდებულო) — მძიმით გამოყოფილი ჩანაწერები, თითო ფილტრზე:
+    ფორმატი:  tax_slug : type : multiple
+        • tax_slug — WooCommerce ატრიბუტი/ტაქსონომია ( напр. pa_city, pa_color )
+        • type     — "select" ან "checkbox" (UI ტიპი)
+        • multiple — "yes" ან "no" (მხოლოდ select ტიპზე გააჩნია აზრი: multi પસંદება)
+    სპეციალური ჩანაწერი ფასისთვის:
+        • price_range:price   — გამოიტანს ფასის დიაპაზონის UI-ს (სლაიდერი + მინ/მაქს ინპუტები)
+
+- title          (არასავალდებულო) — საერთო სათაური ფილტრის ბლოკებისთვის.
+                   ფასი/price_range-სთვის გამოიყენება "ფასი" თუ ცარიელია.
+                   ტაქსონომიებისთვის თუ ცარიელია, გამოაქვს ტაქსონომიის Label.
+
+- class          (არასავალდებულო) — დამატებითი CSS კლას(ებ)ი wrapper-ზე.
+
+- placeholder    (არასავალდებულო) — select ტიპის ვიზუალური placeholder (მაგ. "მდებარეობა").
+
+- show_cont      (არასავალდებულო) — "yes" | "no"
+                   "yes" შემთხვევაში აჩვენებს count-ს (applyCounts() ჩაანაცვლებს ციფრებს).
+                   "no" შემთხვევაში count საერთოდ არ გამოჩნდება.
+
+ქცევა:
+- SELECT ტიპი: custom dropdown (ძიება, მრავალჯერადი არჩევა, “ყველა” — მხოლოდ multiple=yes შემთხვევაში).
+- CHECKBOX ტიპი: ჩვეულებრივი checkbox-ების სია, თქვენი applyCounts()-ისთვის საჭირო data-tax / data-term-id markup-ით.
+- HIDDEN native <select>: შენარჩუნებულია შიგნით (display:none) რათა თქვენი ძველი JS (collectAll(), change event) უცვლელად იმუშაოს.
+- Count-ები: markup-ში იყენებს .agaf-count-ს, რასაც თქვენი applyCounts() ანახლებს.
+
+მაგალითები:
+1) მარტივი — ქალაქი (multi) + მიწოდების პირობა (checkbox)
+[agaf_filters
+  taxes="pa_city:select:yes, pa_mitanis-pirobebi:checkbox:no"
+  title="ფილტრები"
+  placeholder="მდებარეობა"
+  show_cont="yes"
+]
+
+2) ფასი + ქალაქი (single select), count გამორთული
+[agaf_filters
+  taxes="price_range:price, pa_city:select:no"
+  title="ფილტრი"
+  placeholder="ქალაქი"
+  show_cont="no"
+]
+
+3) რამდენიმე ატრიბუტი ერთად, custom CSS კლასით
+[agaf_filters
+  taxes="pa_city:select:yes, pa_color:select:yes, pa_brand:checkbox:no"
+  class="agaf--wide"
+  placeholder="აირჩიე"
+  show_cont="yes"
+]
+
+ნიშნები:
+- multiple=“yes” მხოლოდ select UI-ზე ამოქმედებს multi არჩევას და აჩენს “ყველას მონიშვნა”-ს.
+- show_cont="yes" რეჟიმში PHP გამოიტანს count-placeholder-ს და JS (applyCounts) ციფრებს ჩაწერს.
+- Price დიაპაზონი ითვლის ავტორის პროდუქტების მინ/მაქს ფასებს (cached, 10 წუთი).
+- Dropdown-ის არჩევისას სინქრონდება დამალულ native <select>-თან და იძახებს change-ს — ამით თქვენს ძველ JS-ს არაფერი ეშლება.
+*/
+
+
 if (!defined('ABSPATH')) exit;
 
 define('AGAFUI_VER', '1.0.0');
